@@ -38,15 +38,15 @@ const userSchema = new mongoose.Schema(
     // },
     cart: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "cart",
+      ref: "carts",
     },
     order: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "order",
+      ref: "orders",
     },
     wishList: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "wishlist",
+      ref: "wishlists",
     },
   },
   {
@@ -54,4 +54,4 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("user", userSchema);
+module.exports = mongoose.model("users", userSchema);
