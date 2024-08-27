@@ -22,7 +22,7 @@ const addToWishList = async (req, res) => {
           .status(400)
           .json({ success: false, message: "Product already exists" });
       }
-      
+
       wishList.products.push({ productId });
     }
 
@@ -68,25 +68,25 @@ const getWishList = async (req, res) => {
 };
 
 const deleteWishList = async (req, res) => {
-  const userId = req.params.id;
-  const { productId } = req.body;
-  const updatedWishList = await wishSchema.findOneAndUpdate(
-    { userId },
-    { $pull: { products: { productId } } },
-    { new: true }
-  );
-
-  if (!updatedWishList) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Product not found" });
-  }
-  res.status(200).json({
-    success: true,
-    data: updatedWishList,
-    message: "Product removed from wishlist successfully",
-  });
   try {
+    const userId = req.params.id;
+    const { productId } = req.body;
+    const updatedWishList = await wishSchema.findOneAndUpdate(
+      { userId },
+      { $pull: { products: { productId } } },
+      { new: true }
+    );
+
+    if (!updatedWishList) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Product not found" });
+    }
+    res.status(200).json({
+      success: true,
+      data: updatedWishList,
+      message: "Product removed from wishlist successfully",
+    });
   } catch (error) {
     res.status(500).json({
       success: false,

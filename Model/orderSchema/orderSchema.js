@@ -20,24 +20,11 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
-    purchaseDate: {
-      type: Date,
-    },
-    totalPrice: {
-      type: Number,
-    },
-    totalItems: {
-      type: Number,
-    },
-    CustomerName: {
-      type: String,
-    },
-    DeliveryAddress: {
-      type: String,
-    },
-    DeliveryPincode: {
-      type: String,
-    },
+    purchaseDate: { type: Date },
+    totalItems: { type: Number },
+    CustomerName: { type: String },
+    DeliveryAddress: { type: String },
+    paymentId: { type: String },
   },
   {
     timestamps: true,
