@@ -21,7 +21,11 @@ const {
   getOrders,
   orderItem,
 } = require("../../Controller/userSide/orderController/orderController.js");
-// const createPayment = require("../../Controller/userSide/paymentController/paymentController.js");
+const checkAuth = require("../../middleware/auth.js");
+const {
+  createPayment,
+  paymentVerification,
+} = require("../../Controller/userSide/paymentController/paymentController.js");
 
 const userRouter = express.Router();
 
@@ -31,16 +35,17 @@ userRouter.post("/login", login);
 userRouter.get("/products", getProducts);
 userRouter.get("/products/:id", getProductWithId);
 
-userRouter.post("/:id/cart", addToCart);
-userRouter.get("/:id/cart", getCart);
-userRouter.delete("/:id/cart", removeCart);
+userRouter.post("/:id/cart", checkAuth, addToCart);
+userRouter.get("/:id/cart", checkAuth, getCart);
+userRouter.delete("/:id/cart", checkAuth, removeCart);
 
-userRouter.post("/:id/wishlists", addToWishList);
-userRouter.get("/:id/wishlists", getWishList);
-userRouter.delete("/:id/wishlists", deleteWishList);
+userRouter.post("/:id/wishlists", checkAuth, addToWishList);
+userRouter.get("/:id/wishlists", checkAuth, getWishList);
+userRouter.delete("/:id/wishlists", checkAuth, deleteWishList);
 
-userRouter.post("/:id/orders", orderItem);
-userRouter.get("/:id/orders", getOrders);
-// userRouter.post("/:id/payment-gateway", createPayment);
+userRouter.post("/:id/orders", checkAuth, orderItem);
+userRouter.get("/:id/orders", checkAuth, getOrders);
+userRouter.post("/:id/payment-gateway", checkAuth, createPayment);
+userRouter.post("/:id/payment-verification", checkAuth, paymentVerification);
 
 module.exports = userRouter;

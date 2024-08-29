@@ -20,15 +20,10 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
-    purchaseDate: { type: Date },
-    totalItems: { type: Number },
-    CustomerName: { type: String },
-    DeliveryAddress: { type: String },
-    paymentId: { type: String },
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("order", orderSchema);
+module.exports = mongoose.model("Order", orderSchema);
