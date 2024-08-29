@@ -93,4 +93,77 @@ const removeCart = async (req, res) => {
   }
 };
 
-module.exports = { addToCart, getCart, removeCart };
+const quantityIncrement = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { productId, quantity } = req.body;
+
+    const cart = await cartSchema.findOne({ userId });
+
+    const product = cart.products.findIndex(
+      (product) => product.productId.toString() === productId
+    );
+
+    if (product >= 0) {
+      cart.products[product].quantity += quantity;
+    }
+
+    await cart.save();
+
+    res.json({
+      success: true,
+      message: "Product quantity increased successfully",
+    });
+  } catch (error) {
+    res
+      .status(200)
+      .json({ success: false, message: `Bad requset : ${error.message}` });
+  }
+};
+
+const quantityDecrement = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { productId, quantity } = req.body;
+
+    const cart = await cartSchema.findOne({ userId });
+
+    if (!cart) {
+      return res.status(404).json({
+        success: false,
+        message: "Cart not found",
+      });
+    }
+
+    const product = cart.products.findIndex(
+      (product) => product.productId.toString() === productId
+    );
+
+    if (product >= 0) {
+      cart.products[product].quantity -= quantity;
+    }
+
+    if (cart.products[product].quantity < 0) {
+      cart.products[product].quantity = 0;
+    }
+
+    await cart.save();
+
+    res.json({
+      success: true,
+      message: "Product quantity decreased successfully",
+    });
+  } catch (error) {
+    res
+      .status(200)
+      .json({ success: false, message: `Bad requset : ${error.message}` });
+  }
+};
+
+module.exports = {
+  addToCart,
+  getCart,
+  removeCart,
+  quantityIncrement,
+  quantityDecrement,
+};

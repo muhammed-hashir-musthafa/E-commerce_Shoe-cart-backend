@@ -69,14 +69,12 @@ const login = async (req, res) => {
 
     const token = generateToken(user.id);
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        username: user.username,
-        password: user.password,
-        token,
-      });
+    res.status(200).json({
+      success: true,
+      username: user.username,
+      password: user.password,
+      token,
+    });
   } catch (error) {
     res
       .status(500)
@@ -84,4 +82,21 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { signUp, login };
+const logout = (req, res) => {
+  try {
+    res.cookie("token", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    });
+    res.status(200).json({
+      success: true,
+      message: "Logged Out",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: `Bad request ${error.message} ` });
+  }
+};
+
+module.exports = { signUp, login, logout };

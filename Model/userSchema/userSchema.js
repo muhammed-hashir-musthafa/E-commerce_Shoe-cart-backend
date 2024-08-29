@@ -28,14 +28,16 @@ const userSchema = new mongoose.Schema(
     CreatedOn: {
       type: Date,
     },
-    // address: {
-    //   type: String,
-    //   required: true,
-    // },
-    // pincode: {
-    //   type: Number,
-    //   required: true,
-    // },
+    role: {
+      type: String,
+      default: "user",
+    },
+    address: {
+      type: String,
+    },
+    pincode: {
+      type: Number,
+    },
     cart: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "carts",

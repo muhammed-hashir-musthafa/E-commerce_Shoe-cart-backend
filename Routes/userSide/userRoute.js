@@ -2,6 +2,7 @@ const express = require("express");
 const {
   login,
   signUp,
+  logout,
 } = require("../../Controller/userSide/userController/userController.js");
 const {
   getProducts,
@@ -26,16 +27,21 @@ const {
   createPayment,
   paymentVerification,
 } = require("../../Controller/userSide/paymentController/paymentController.js");
+const {
+  handleCart,
+  cartController,
+} = require("../../middleware/handleCart.js");
 
 const userRouter = express.Router();
 
 userRouter.post("/register", signUp);
 userRouter.post("/login", login);
+userRouter.post("/logout", logout);
 
 userRouter.get("/products", getProducts);
 userRouter.get("/products/:id", getProductWithId);
 
-userRouter.post("/:id/cart", checkAuth, addToCart);
+userRouter.post("/:id/cart", checkAuth, handleCart, cartController);
 userRouter.get("/:id/cart", checkAuth, getCart);
 userRouter.delete("/:id/cart", checkAuth, removeCart);
 
