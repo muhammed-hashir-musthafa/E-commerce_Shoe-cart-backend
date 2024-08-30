@@ -31,7 +31,6 @@ const getProducts = async (req, res) => {
 };
 
 //  Display products by Id
-
 const getProductWithId = async (req, res) => {
   try {
     const productId = req.params.id;

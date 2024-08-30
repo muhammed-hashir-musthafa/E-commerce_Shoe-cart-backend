@@ -1,11 +1,11 @@
-const signUpValidation = require("../../../Model/userSchema/signUpValidationSchema.js");
+ const signUpValidation = require("../../../middleware/joiValidation/signUpValidationSchema.js");
 const userSchema = require("../../../Model/userSchema/userSchema.js");
 const { hashedPassword, comparePassword } = require("../../../utils/bcrypt.js");
 const generateToken = require("../../../utils/jwt.js");
 
 const signUp = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, role } = req.body;
 
     const existingUser = await userSchema.findOne({ email });
 
@@ -27,6 +27,7 @@ const signUp = async (req, res) => {
       email: validatedUser.email,
       username: validatedUser.username,
       password: hashedPass,
+      role: role,
     });
     await newUser.save();
 
@@ -64,7 +65,7 @@ const login = async (req, res) => {
     if (!validUser) {
       return res
         .status(400)
-        .json({ success: false, message: "Email already exists..." });
+        .json({ success: false, message: "Incorrect password/username" });
     }
 
     const token = generateToken(user.id);
