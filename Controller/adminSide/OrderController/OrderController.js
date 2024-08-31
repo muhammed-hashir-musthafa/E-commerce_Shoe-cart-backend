@@ -1,5 +1,6 @@
  const orderSchema = require("../../../Model/orderSchema/orderSchema.js");
 
+ //Display all orders
 const getAllOrders = async (req, res) => {
   try {
     const order = await orderSchema.find();
@@ -22,6 +23,7 @@ const getAllOrders = async (req, res) => {
   }
 };
 
+ //Display orders by user
 const getOrdersByUser = async (req, res) => {
   try {
     const userId = req.params.id;

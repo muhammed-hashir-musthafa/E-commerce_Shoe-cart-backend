@@ -1,5 +1,6 @@
 const Order = require("../../../Model/orderSchema/orderSchema.js");
 
+// Order products
 const orderItem = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -46,6 +47,7 @@ const orderItem = async (req, res) => {
   }
 };
 
+// Display orders
 const getOrders = async (req, res) => {
   try {
     const userId = req.params.id;

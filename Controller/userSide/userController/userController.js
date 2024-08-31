@@ -3,6 +3,7 @@ const userSchema = require("../../../Model/userSchema/userSchema.js");
 const { hashedPassword, comparePassword } = require("../../../utils/bcrypt.js");
 const generateToken = require("../../../utils/jwt.js");
 
+// Registration
 const signUp = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
@@ -47,6 +48,7 @@ const signUp = async (req, res) => {
   }
 };
 
+// login 
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -83,6 +85,7 @@ const login = async (req, res) => {
   }
 };
 
+// logout
 const logout = (req, res) => {
   try {
     res.cookie("token", null, {

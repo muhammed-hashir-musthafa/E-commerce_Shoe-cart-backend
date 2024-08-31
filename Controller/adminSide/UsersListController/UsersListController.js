@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const userSchema = require("../../../Model/userSchema/userSchema");
 
+// Display all users
 const getAllUsers = async (req, res) => {
   try {
     const users = await userSchema.find() ;
@@ -17,6 +18,7 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// Display users by ID
 const getUserById = async (req, res) => {
   try {
     const userId = req.params.id;

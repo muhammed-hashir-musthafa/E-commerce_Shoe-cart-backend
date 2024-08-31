@@ -1,5 +1,6 @@
 const wishSchema = require("../../../Model/wishListSchema/wishListSchema.js");
 
+// Add to wishlist
 const addToWishList = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -41,6 +42,7 @@ const addToWishList = async (req, res) => {
   }
 };
 
+// Dipslay wishlist
 const getWishList = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -67,6 +69,7 @@ const getWishList = async (req, res) => {
   }
 };
 
+// Delete wishlist
 const deleteWishList = async (req, res) => {
   try {
     const userId = req.params.id;

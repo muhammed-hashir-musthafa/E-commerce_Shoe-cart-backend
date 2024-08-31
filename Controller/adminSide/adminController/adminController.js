@@ -2,6 +2,7 @@ const userSchema = require("../../../Model/userSchema/userSchema");
 const { comparePassword } = require("../../../utils/bcrypt");
 const generateToken = require("../../../utils/jwt");
 
+// Admin login 
 const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -42,6 +43,7 @@ const adminLogin = async (req, res) => {
   }
 };
 
+// Admin logout
 const adminLogout = (req, res) => {
   try {
     res.cookie("token", null, {

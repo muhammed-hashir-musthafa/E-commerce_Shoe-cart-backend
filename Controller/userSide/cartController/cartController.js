@@ -1,5 +1,6 @@
 const cartSchema = require("../../../Model/cartSchema/cartSchema.js");
 
+//Add to cart
 const addToCart = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -38,6 +39,7 @@ const addToCart = async (req, res) => {
   }
 };
 
+//Display cart
 const getCart = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -63,6 +65,8 @@ const getCart = async (req, res) => {
     });
   }
 };
+
+// Remove from cart
 const removeCart = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -93,6 +97,7 @@ const removeCart = async (req, res) => {
   }
 };
 
+// Quantity increment of product
 const quantityIncrement = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -121,6 +126,7 @@ const quantityIncrement = async (req, res) => {
   }
 };
 
+// Quantity decrement of product
 const quantityDecrement = async (req, res) => {
   try {
     const userId = req.params.id;

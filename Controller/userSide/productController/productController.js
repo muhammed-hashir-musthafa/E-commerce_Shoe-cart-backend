@@ -1,9 +1,9 @@
 const productSchema = require("../../../Model/productSchema/productSchema.js");
 
+
+//  Display all products
 const getProducts = async (req, res) => {
   try {
-    //  Display all products
-
     const { category } = req.query;
     let getProducts;
 
