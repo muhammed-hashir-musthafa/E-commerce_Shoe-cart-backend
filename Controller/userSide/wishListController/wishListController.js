@@ -1,10 +1,23 @@
+const Mongoose = require("mongoose");
 const wishSchema = require("../../../Model/wishListSchema/wishListSchema.js");
+const productSchema = require("../../../Model/productSchema/productSchema.js");
 
 // Add to wishlist
 const addToWishList = async (req, res) => {
   try {
     const userId = req.params.id;
     const { productId } = req.body;
+
+    if (!Mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "No user found" });
+    }
+
+    const productExists = await productSchema.findById(productId);
+    if (!productExists) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
 
     let wishList = await wishSchema.findOne({ userId });
 
@@ -46,6 +59,11 @@ const addToWishList = async (req, res) => {
 const getWishList = async (req, res) => {
   try {
     const userId = req.params.id;
+
+    if (!Mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "No user found" });
+    }
+
     const wishlist = await wishSchema
       .findOne({ userId })
       .populate("products.productId");
@@ -74,6 +92,17 @@ const deleteWishList = async (req, res) => {
   try {
     const userId = req.params.id;
     const { productId } = req.body;
+
+    if (!Mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "No user found" });
+    }
+    const productExists = await productSchema.findById(productId);
+    if (!productExists) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
     const updatedWishList = await wishSchema.findOneAndUpdate(
       { userId },
       { $pull: { products: { productId } } },

@@ -22,7 +22,7 @@ const {
   getOrders,
   orderItem,
 } = require("../../Controller/userSide/orderController/orderController.js");
-const checkAuth = require("../../middleware/auth.js");
+const {checkAuth} = require("../../middleware/auth.js");
 const {
   createPayment,
   paymentVerification,

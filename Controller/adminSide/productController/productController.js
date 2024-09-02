@@ -34,11 +34,15 @@ const getProductsByAdmin = async (req, res) => {
   }
 };
 
-
 //  Display products by Id
 const getProductWithIdByAdmin = async (req, res) => {
   try {
     const productId = req.params.id;
+    if (!Mongoose.Types.ObjectId.isValid(productId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No product found" });
+    }
     const getProductId = await productSchema.findById(productId);
 
     if (!getProductId) {
@@ -132,6 +136,12 @@ const updateProduct = async (req, res) => {
   try {
     const productId = req.params.id;
     const productUpdate = req.body;
+
+    if (!Mongoose.Types.ObjectId.isValid(productId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Product not found" });
+    }
 
     await updateProductValidation.validateAsync(productUpdate);
 

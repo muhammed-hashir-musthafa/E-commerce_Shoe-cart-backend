@@ -1,6 +1,7 @@
- const orderSchema = require("../../../Model/orderSchema/orderSchema.js");
+const Mongoose = require("mongoose");
+const orderSchema = require("../../../Model/orderSchema/orderSchema.js");
 
- //Display all orders
+//Display all orders
 const getAllOrders = async (req, res) => {
   try {
     const order = await orderSchema.find();
@@ -23,12 +24,18 @@ const getAllOrders = async (req, res) => {
   }
 };
 
- //Display orders by user
+//Display orders by user
 const getOrdersByUser = async (req, res) => {
   try {
     const userId = req.params.id;
- 
-    const orderByUser = await orderSchema.findOne({userId});
+
+    if (!Mongoose.Types.ObjectId.isValid(userId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No user found" });
+    }
+
+    const orderByUser = await orderSchema.findOne({ userId });
 
     if (!orderByUser) {
       return res

@@ -1,5 +1,5 @@
+const Mongoose = require("mongoose");
 const productSchema = require("../../../Model/productSchema/productSchema.js");
-
 
 //  Display all products
 const getProducts = async (req, res) => {
@@ -34,6 +34,13 @@ const getProducts = async (req, res) => {
 const getProductWithId = async (req, res) => {
   try {
     const productId = req.params.id;
+
+    if (!Mongoose.Types.ObjectId.isValid(productId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No product found" });
+    }
+
     const getProductId = await productSchema.findById(productId);
 
     if (!getProductId) {

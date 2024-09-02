@@ -1,10 +1,16 @@
-const Order = require("../../../Model/orderSchema/orderSchema.js");
+const Mongoose = require("mongoose");
+const orderSchema = require("../../../Model/orderSchema/orderSchema.js");
+const productSchema = require('../../../Model/productSchema/productSchema.js')
 
 // Order products
 const orderItem = async (req, res) => {
   try {
     const userId = req.params.id;
     const { productId } = req.body;
+
+    if (!Mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "No user found" });
+    }
 
     if (!productId) {
       return res.status(400).json({
@@ -13,16 +19,23 @@ const orderItem = async (req, res) => {
       });
     }
 
-    let order = await Order.findOne({ userId });
+    const productExists = await productSchema.findById(productId);
+    if (!productExists) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    let order = await orderSchema.findOne({ userId });
 
     if (!order) {
-      order = new Order({
+      order = new orderSchema({
         userId,
         products: [{ productId, quantity: 1 }],
       });
     } else {
       const productIndex = order.products.findIndex(
-        (p) => p.productId.toString() === productId
+        (product) => product.productId.toString() === productId
       );
 
       if (productIndex !== -1) {
@@ -52,9 +65,13 @@ const getOrders = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    const orderList = await Order.findOne({ userId }).populate(
-      "products.productId"
-    );
+    if (!Mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "No user found" });
+    }
+
+    const orderList = await orderSchema
+      .findOne({ userId })
+      .populate("products.productId");
 
     if (!orderList) {
       return res

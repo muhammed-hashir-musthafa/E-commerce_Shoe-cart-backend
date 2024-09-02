@@ -18,8 +18,7 @@ const totalRevenue = async (req, res) => {
       .reduce((a, b) => a + b, 0);
 
     console.log(totalRevenue);
-
-    res.status(200).json({
+     res.status(200).json({
       success: true,
       message: `Total revenue is ${totalRevenue}`,
     });

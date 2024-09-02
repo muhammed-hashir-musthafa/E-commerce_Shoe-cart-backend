@@ -16,7 +16,7 @@ const createPayment = async (req, res) => {
     }
 
     const options = {
-      amount: amount * 100, // Convert to smallest currency unit
+      amount: amount * 100, 
       currency,
       receipt,
     };

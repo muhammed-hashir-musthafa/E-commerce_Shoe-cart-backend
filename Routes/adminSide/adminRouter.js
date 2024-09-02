@@ -1,28 +1,47 @@
 const express = require("express");
-const { adminLogout, adminLogin } = require("../../Controller/adminSide/adminController/adminController.js");
-const { getAllUsers, getUserById } = require("../../Controller/adminSide/UsersListController/UsersListController.js");
-const { getProductWithIdByAdmin, getProductsByAdmin, addProduct, deleteProduct, updateProduct } = require("../../Controller/adminSide/productController/productController.js");
-const { getAllOrders, getOrdersByUser } = require("../../Controller/adminSide/OrderController/OrderController.js");
-const { totalSales, totalRevenue } = require("../../Controller/adminSide/adminAnalytics/adminAnalytics.js");
- 
+const {
+  adminLogout,
+  adminLogin,
+} = require("../../Controller/adminSide/adminController/adminController.js");
+const {
+  getAllUsers,
+  getUserById,
+} = require("../../Controller/adminSide/UsersListController/UsersListController.js");
+const {
+  getProductWithIdByAdmin,
+  getProductsByAdmin,
+  addProduct,
+  deleteProduct,
+  updateProduct,
+} = require("../../Controller/adminSide/productController/productController.js");
+const {
+  getAllOrders,
+  getOrdersByUser,
+} = require("../../Controller/adminSide/OrderController/OrderController.js");
+const {
+  totalSales,
+  totalRevenue,
+} = require("../../Controller/adminSide/adminAnalytics/adminAnalytics.js");
+const { checkAuth } = require("../../middleware/auth.js");
+
 const adminRouter = express.Router();
 
 adminRouter.post("/login", adminLogin);
 adminRouter.post("/logout", adminLogout);
 
-adminRouter.get("/userlist", getAllUsers);
-adminRouter.get("/:id/userlist", getUserById);
+adminRouter.get("/userlist", checkAuth, getAllUsers);
+adminRouter.get("/:id/userlist", checkAuth, getUserById);
 
-adminRouter.get("/products", getProductsByAdmin);
-adminRouter.get("/products/:id", getProductWithIdByAdmin);
-adminRouter.post("/product", addProduct);
-adminRouter.delete("/:id/product", deleteProduct);
-adminRouter.patch("/:id/product", updateProduct);
+adminRouter.get("/products", checkAuth, getProductsByAdmin);
+adminRouter.get("/products/:id", checkAuth, getProductWithIdByAdmin);
+adminRouter.post("/product", checkAuth, addProduct);
+adminRouter.delete("/:id/product", checkAuth, deleteProduct);
+adminRouter.patch("/:id/product", checkAuth, updateProduct);
 
-adminRouter.get("/orders", getAllOrders);
-adminRouter.get("/:id/orders", getOrdersByUser);
+adminRouter.get("/orders", checkAuth, getAllOrders);
+adminRouter.get("/:id/orders", checkAuth, getOrdersByUser);
 
-adminRouter.get("/analytics-revenue", totalSales);
-adminRouter.get("/analytics-products", totalRevenue);
+adminRouter.get("/analytics-revenue", checkAuth, totalRevenue);
+adminRouter.get("/analytics-products", checkAuth, totalSales);
 
 module.exports = adminRouter;
