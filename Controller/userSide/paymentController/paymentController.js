@@ -1,22 +1,41 @@
 const razorpay = require("../../../config/razorpay.js");
 const crypto = require("crypto");
-const Payment = require("../../../Model/paymentSchema/paymentSchema.js");
+const paymentSchema = require("../../../Model/paymentSchema/paymentSchema.js");
+const Mongoose = require("mongoose");
+const cartSchema = require("../../../Model/cartSchema/cartSchema.js");
 
-
-// Make payment 
+// Make payment
 const createPayment = async (req, res) => {
   try {
-    const { amount, currency, receipt } = req.body;
+    const userId = req.params.id;
+    const { currency, receipt } = req.body;
 
-    if (!amount || !currency || !receipt) {
+    if (!Mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "No user found" });
+    }
+
+    const cart = await cartSchema
+      .findOne({ userId })
+      .populate("products.productId");
+    if (!cart) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Cart is Empty!" });
+    }
+
+    const amount = cart.products
+      .map((item) => item.productId.price)
+      .reduce((a, b) => a + b, 0);
+
+    if (!currency || !receipt) {
       return res.status(400).json({
         success: false,
-        message: "Please provide amount, currency, and receipt details.",
+        message: "Please provide currency, and receipt details.",
       });
     }
 
     const options = {
-      amount: amount * 100, 
+      amount: amount * 100,
       currency,
       receipt,
     };
@@ -24,7 +43,9 @@ const createPayment = async (req, res) => {
     const order = await razorpay.orders.create(options);
 
     if (!order) {
-      return res.status(500).json({ success: false, message: "Order creation failed" });
+      return res
+        .status(500)
+        .json({ success: false, message: "Order creation failed" });
     }
 
     res.status(200).json({
@@ -40,10 +61,25 @@ const createPayment = async (req, res) => {
   }
 };
 
-// Verify the payment 
+// Verify the payment
 const paymentVerification = async (req, res) => {
   try {
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
+      req.body;
+    const userId = req.params.id;
+
+    const cart = await cartSchema
+      .findOne({ userId })
+      .populate("products.productId");
+    if (!cart) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Cart not found" });
+    }
+
+    const amount = cart.products
+      .map((item) => item.productId.price)
+      .reduce((a, b) => a + b, 0);
 
     if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
       return res.status(400).json({
@@ -62,11 +98,11 @@ const paymentVerification = async (req, res) => {
     const isAuthentic = expectedSignature === razorpay_signature;
 
     if (isAuthentic) {
-      const payment = new Payment({
+      const payment = new paymentSchema({
         razorpay_order_id,
         razorpay_payment_id,
         razorpay_signature,
-        amount: req.body.amount,
+        amount: amount,
         currency: req.body.currency,
         status: "success",
       });

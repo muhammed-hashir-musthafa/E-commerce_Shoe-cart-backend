@@ -38,7 +38,6 @@ const addToCart = async (req, res) => {
       }
     }
     await cart.save();
-
     res.status(200).json({
       success: true,
       data: cart,

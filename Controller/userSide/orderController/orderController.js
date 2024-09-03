@@ -1,6 +1,7 @@
 const Mongoose = require("mongoose");
 const orderSchema = require("../../../Model/orderSchema/orderSchema.js");
-const productSchema = require('../../../Model/productSchema/productSchema.js')
+const productSchema = require("../../../Model/productSchema/productSchema.js");
+const cartSchema = require("../../../Model/cartSchema/cartSchema.js");
 
 // Order products
 const orderItem = async (req, res) => {
@@ -26,12 +27,29 @@ const orderItem = async (req, res) => {
         .json({ success: false, message: "Product not found" });
     }
 
+    const cart = await cartSchema.findOne({userId});
+    if (!cart) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Cart not found" });
+    }
+
+    const productInCart = cart.products.find(
+      (prodct) => prodct.productId.toString() === productId
+    );
+
+    if (!productInCart) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found in cart" });
+    }
+
     let order = await orderSchema.findOne({ userId });
 
     if (!order) {
       order = new orderSchema({
         userId,
-        products: [{ productId, quantity: 1 }],
+        products: [{ productId, quantity: productInCart.quantity }],
       });
     } else {
       const productIndex = order.products.findIndex(
@@ -39,9 +57,9 @@ const orderItem = async (req, res) => {
       );
 
       if (productIndex !== -1) {
-        order.products[productIndex].quantity += 1;
+        order.products[productIndex].quantity += productInCart.quantity;
       } else {
-        order.products.push({ productId, quantity: 1 });
+        order.products.push({ productId, quantity: productInCart.quantity });
       }
     }
 

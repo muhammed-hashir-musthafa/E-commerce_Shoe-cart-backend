@@ -38,18 +38,18 @@ const userSchema = new mongoose.Schema(
     pincode: {
       type: Number,
     },
-    cart: {
+    cart: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "carts",
-    },
-    order: {
+    }],
+    order: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "orders",
-    },
-    wishList: {
+    }],
+    wishList: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "wishlists",
-    },
+    }],
   },
   {
     timestamps: true,
