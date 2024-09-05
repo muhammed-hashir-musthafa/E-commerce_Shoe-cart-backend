@@ -20,6 +20,29 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
+    Total_Amount: {
+      type: Number,
+    },
+    Payment_Id: {
+      type: String,
+    },
+    Total_Items: { type: Number },
+    Customer_Name: { type: String },
+    address: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    pincode: {
+      type: Number,
+    },
+    contact: {
+      type: Number,
+    },
   },
   {
     timestamps: true,

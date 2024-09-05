@@ -1,6 +1,7 @@
 const Mongoose = require("mongoose");
 const cartSchema = require("../../../Model/cartSchema/cartSchema.js");
 const productSchema = require("../../../Model/productSchema/productSchema.js");
+const userSchema = require("../../../Model/userSchema/userSchema.js");
 
 //Add to cart
 const addToCart = async (req, res) => {
@@ -8,7 +9,7 @@ const addToCart = async (req, res) => {
     const userId = req.params.id;
     const { productId, quantity } = req.body;
 
-    if (!Mongoose.Types.ObjectId.isValid(userId)) {
+      if (!Mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ success: false, message: "No user found" });
     }
 

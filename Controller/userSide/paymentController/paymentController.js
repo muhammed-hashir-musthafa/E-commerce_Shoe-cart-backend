@@ -3,6 +3,8 @@ const crypto = require("crypto");
 const paymentSchema = require("../../../Model/paymentSchema/paymentSchema.js");
 const Mongoose = require("mongoose");
 const cartSchema = require("../../../Model/cartSchema/cartSchema.js");
+const orderSchema = require("../../../Model/orderSchema/orderSchema.js");
+const userSchema = require("../../../Model/userSchema/userSchema.js");
 
 // Make payment
 const createPayment = async (req, res) => {
@@ -98,6 +100,29 @@ const paymentVerification = async (req, res) => {
     const isAuthentic = expectedSignature === razorpay_signature;
 
     if (isAuthentic) {
+      const user = await userSchema.findById(userId);
+
+      const order = new orderSchema({
+        userId,
+        products: cart.products.map((item) => ({
+          productId: item.productId._id,
+          quantity: item.quantity,
+        })),
+        Total_Amount: amount,
+        Payment_Id: razorpay_payment_id,
+        Customer_Name: user.username,
+        Total_Items: cart.products.length,
+        address: user.address,
+        city: user.city,
+        state: user.state,
+        pincode: user.pincode,
+        contact: user.contact,
+      });
+
+      await order.save();
+
+      await cartSchema.deleteMany({ userId });
+
       const payment = new paymentSchema({
         razorpay_order_id,
         razorpay_payment_id,
@@ -111,7 +136,7 @@ const paymentVerification = async (req, res) => {
 
       res.status(200).json({
         success: true,
-        message: "Payment verification successful",
+        message: "Payment verification successful and Ordered Successfully ",
         data: payment,
       });
     } else {

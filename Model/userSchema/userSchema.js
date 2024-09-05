@@ -35,21 +35,18 @@ const userSchema = new mongoose.Schema(
     address: {
       type: String,
     },
+    city: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
     pincode: {
       type: Number,
     },
-    cart: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "carts",
-    }],
-    order: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "orders",
-    }],
-    wishList: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "wishlists",
-    }],
+    contact: {
+      type: Number,
+    },
   },
   {
     timestamps: true,

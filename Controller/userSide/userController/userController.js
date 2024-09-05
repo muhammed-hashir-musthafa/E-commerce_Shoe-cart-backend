@@ -1,4 +1,4 @@
- const signUpValidation = require("../../../middleware/joiValidation/signUpValidationSchema.js");
+const signUpValidation = require("../../../middleware/joiValidation/signUpValidationSchema.js");
 const userSchema = require("../../../Model/userSchema/userSchema.js");
 const { hashedPassword, comparePassword } = require("../../../utils/bcrypt.js");
 const generateToken = require("../../../utils/jwt.js");
@@ -29,6 +29,11 @@ const signUp = async (req, res) => {
       username: validatedUser.username,
       password: hashedPass,
       role: role,
+      address: req.body.address,
+      city: req.body.city,
+      state: req.body.state,
+      pincode: req.body.pincode,
+      contact: req.body.contact,
     });
     await newUser.save();
 
@@ -48,7 +53,7 @@ const signUp = async (req, res) => {
   }
 };
 
-// login 
+// login
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
