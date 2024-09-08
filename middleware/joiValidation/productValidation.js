@@ -9,6 +9,7 @@ const addProductValidation = Joi.object({
   quantity: Joi.number().min(0),
   isDeleted: Joi.boolean(),
   imageSrc: Joi.string().uri(),
+  imageAlt: Joi.string(),
 });
 
 const updateProductValidation = Joi.object({
@@ -20,6 +21,7 @@ const updateProductValidation = Joi.object({
   quantity: Joi.number().min(0),
   isDeleted: Joi.boolean(),
   imageSrc: Joi.string().uri(),
+  imageAlt: Joi.string(),
 }).min(1);
 
 module.exports = { addProductValidation, updateProductValidation };

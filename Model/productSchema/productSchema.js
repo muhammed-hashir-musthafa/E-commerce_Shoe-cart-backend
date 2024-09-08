@@ -9,6 +9,9 @@ const productSchema = new mongoose.Schema(
     imageSrc: {
       type: String,
     },
+    imageAlt: {
+      type: String,
+    },
     description: {
       type: String,
     },
@@ -25,7 +28,7 @@ const productSchema = new mongoose.Schema(
     },
     quantity: {
       type: Number,
-      default:1
+      default: 1,
     },
     isDeleted: {
       type: Boolean,

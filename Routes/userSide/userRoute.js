@@ -41,17 +41,17 @@ userRouter.post("/logout", logout);
 userRouter.get("/products", getProducts);
 userRouter.get("/products/:id", getProductWithId);
 
-userRouter.post("/:id/cart", checkAuth, handleCart, cartController);
-userRouter.get("/:id/cart", checkAuth, getCart);
-userRouter.delete("/:id/cart", checkAuth, removeCart);
+userRouter.post("/:id/cart"/*, checkAuth*/, handleCart, cartController);
+userRouter.get("/:id/cart"/*, checkAuth*/, getCart);
+userRouter.delete("/:id/cart"/*, checkAuth*/, removeCart);
 
-userRouter.post("/:id/wishlists", checkAuth, addToWishList);
-userRouter.get("/:id/wishlists", checkAuth, getWishList);
-userRouter.delete("/:id/wishlists", checkAuth, deleteWishList);
+userRouter.post("/:id/wishlists"/*, checkAuth*/, addToWishList);
+userRouter.get("/:id/wishlists"/*, checkAuth*/, getWishList);
+userRouter.delete("/:id/wishlists"/*, checkAuth*/, deleteWishList);
 
-// userRouter.post("/:id/orders", checkAuth, orderItem);
-userRouter.get("/:id/orders", checkAuth, getOrders);
-userRouter.post("/:id/payment-gateway", checkAuth, createPayment);
-userRouter.post("/:id/payment-verification", checkAuth, paymentVerification);
+// userRouter.post("/:id/orders"/*, checkAuth*/, orderItem);
+userRouter.get("/:id/orders"/*, checkAuth*/, getOrders);
+userRouter.post("/:id/payment-gateway"/*, checkAuth*/, createPayment);
+userRouter.post("/:id/payment-verification"/*, checkAuth*/, paymentVerification);
 
 module.exports = userRouter;

@@ -7,7 +7,7 @@ const generateToken = require("../../../utils/jwt.js");
 const signUp = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
-
+    // console.log("object")
     const existingUser = await userSchema.findOne({ email });
 
     if (existingUser) {
@@ -44,7 +44,7 @@ const signUp = async (req, res) => {
     });
   } catch (error) {
     if (error.isJoi === true) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: `Bad request in validation: ${error.message}`,
       });
@@ -67,11 +67,11 @@ const login = async (req, res) => {
       });
     }
 
-    const validUser = comparePassword(password, user.password);
+    const validUser = await comparePassword(password, user.password);
 
     if (!validUser) {
       return res
-        .status(400)
+        .status(401)
         .json({ success: false, message: "Incorrect password/username" });
     }
 
@@ -79,8 +79,7 @@ const login = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      username: user.username,
-      password: user.password,
+      data: user,
       token,
     });
   } catch (error) {

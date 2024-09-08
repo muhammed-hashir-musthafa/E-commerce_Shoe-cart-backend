@@ -131,7 +131,8 @@ const paymentVerification = async (req, res) => {
         currency: req.body.currency,
         status: "success",
       });
-
+      user.order.push(order._id)
+      await user.save()
       await payment.save();
 
       res.status(200).json({

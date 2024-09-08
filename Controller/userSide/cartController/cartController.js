@@ -1,7 +1,7 @@
-const Mongoose = require("mongoose");
 const cartSchema = require("../../../Model/cartSchema/cartSchema.js");
 const productSchema = require("../../../Model/productSchema/productSchema.js");
 const userSchema = require("../../../Model/userSchema/userSchema.js");
+const mongoose = require("mongoose");
 
 //Add to cart
 const addToCart = async (req, res) => {
@@ -9,10 +9,13 @@ const addToCart = async (req, res) => {
     const userId = req.params.id;
     const { productId, quantity } = req.body;
 
-      if (!Mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ success: false, message: "No user found" });
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found" });
     }
 
+    const user = await userSchema.findById(userId);
     const product = await productSchema.findById(productId);
     if (!product) {
       return res
@@ -27,6 +30,7 @@ const addToCart = async (req, res) => {
         userId,
         products: [{ productId, quantity }],
       });
+      user.cart = cart._id;
     } else {
       const existingProduct = cart.products.find(
         (product) => product.productId.toString() === productId
@@ -38,6 +42,8 @@ const addToCart = async (req, res) => {
         cart.products.push({ productId, quantity });
       }
     }
+    // user.cart.push(cart._id);
+    await user.save();
     await cart.save();
     res.status(200).json({
       success: true,
@@ -57,7 +63,7 @@ const getCart = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    if (!Mongoose.Types.ObjectId.isValid(userId)) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ success: false, message: "No user found" });
     }
 
@@ -90,10 +96,11 @@ const removeCart = async (req, res) => {
     const userId = req.params.id;
     const { productId } = req.body;
 
-    if (!Mongoose.Types.ObjectId.isValid(userId)) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ success: false, message: "No user found" });
     }
     const cart = await cartSchema.findOne({ userId });
+    const user = await userSchema.findById(userId);
 
     if (!cart) {
       return res
@@ -111,21 +118,22 @@ const removeCart = async (req, res) => {
         .json({ success: false, message: "Product not found in cart" });
     }
 
-    const updatedCart = await cartSchema.findOneAndUpdate(
-      { userId },
-      { $pull: { products: { productId } } },
-      { new: true }
-    );
+    cart.products.splice(productExists, 1);
 
-    if (!updatedCart) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Product not found" });
+    if (cart.products.length === 0) {
+      await userSchema.findByIdAndUpdate(userId, {
+        $unset: { cart: "" },
+      });
+      await cartSchema.deleteOne({ _id: cart._id });
+    } else {
+      await cart.save();
     }
+
+    await user.save();
 
     res.status(200).json({
       success: true,
-      data: updatedCart,
+      data: cart,
       message: "Product removed from cart successfully",
     });
   } catch (error) {
@@ -142,7 +150,7 @@ const quantityIncrement = async (req, res) => {
     const userId = req.params.id;
     const { productId, quantity } = req.body;
 
-    if (!Mongoose.Types.ObjectId.isValid(userId)) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ success: false, message: "No user found" });
     }
     const cart = await cartSchema.findOne({ userId });
@@ -185,7 +193,7 @@ const quantityDecrement = async (req, res) => {
     const userId = req.params.id;
     const { productId, quantity } = req.body;
 
-    if (!Mongoose.Types.ObjectId.isValid(userId)) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ success: false, message: "No user found" });
     }
 

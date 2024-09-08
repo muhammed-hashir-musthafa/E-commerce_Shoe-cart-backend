@@ -47,6 +47,18 @@ const userSchema = new mongoose.Schema(
     contact: {
       type: Number,
     },
+    cart: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "carts",
+    },
+    order: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "orders",
+    }],
+    wishlist: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "wishlists",
+    },
   },
   {
     timestamps: true,

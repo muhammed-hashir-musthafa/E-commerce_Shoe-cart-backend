@@ -6,6 +6,7 @@ const {
 const {
   getAllUsers,
   getUserById,
+  deleteUser,
 } = require("../../Controller/adminSide/UsersListController/UsersListController.js");
 const {
   getProductWithIdByAdmin,
@@ -29,19 +30,20 @@ const adminRouter = express.Router();
 adminRouter.post("/login", adminLogin);
 adminRouter.post("/logout", adminLogout);
 
-adminRouter.get("/userlist", checkAuth, getAllUsers);
-adminRouter.get("/:id/userlist", checkAuth, getUserById);
+adminRouter.get("/userlist" /*, checkAuth*/, getAllUsers);
+adminRouter.get("/:id/userlist" /*, checkAuth*/, getUserById);
+adminRouter.delete("/:id/deleteuser" /*, checkAuth*/, deleteUser);
 
-adminRouter.get("/products", checkAuth, getProductsByAdmin);
-adminRouter.get("/products/:id", checkAuth, getProductWithIdByAdmin);
-adminRouter.post("/product", checkAuth, addProduct);
-adminRouter.delete("/:id/product", checkAuth, deleteProduct);
-adminRouter.patch("/:id/product", checkAuth, updateProduct);
+adminRouter.get("/products" /*, checkAuth*/, getProductsByAdmin);
+adminRouter.get("/products/:id" /*, checkAuth*/, getProductWithIdByAdmin);
+adminRouter.post("/product" /*, checkAuth*/, addProduct);
+adminRouter.delete("/:id/product" /*, checkAuth*/, deleteProduct);
+adminRouter.patch("/:id/product" /*, checkAuth*/, updateProduct);
 
-adminRouter.get("/orders", checkAuth, getAllOrders);
-adminRouter.get("/:id/orders", checkAuth, getOrdersByUser);
+adminRouter.get("/orders" /*, checkAuth*/, getAllOrders);
+adminRouter.get("/:id/orders" /*, checkAuth*/, getOrdersByUser);
 
-adminRouter.get("/analytics-revenue", checkAuth, totalRevenue);
-adminRouter.get("/analytics-products", checkAuth, totalSales);
+adminRouter.get("/analytics-revenue" /*, checkAuth*/, totalRevenue);
+adminRouter.get("/analytics-products" /*, checkAuth*/, totalSales);
 
 module.exports = adminRouter;

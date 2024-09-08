@@ -1,6 +1,7 @@
 const Mongoose = require("mongoose");
 const wishSchema = require("../../../Model/wishListSchema/wishListSchema.js");
 const productSchema = require("../../../Model/productSchema/productSchema.js");
+const userSchema = require("../../../Model/userSchema/userSchema.js");
 
 // Add to wishlist
 const addToWishList = async (req, res) => {
@@ -19,6 +20,7 @@ const addToWishList = async (req, res) => {
         .json({ success: false, message: "Product not found" });
     }
 
+    const user = await userSchema.findById(userId);
     let wishList = await wishSchema.findOne({ userId });
 
     if (!wishList) {
@@ -26,6 +28,7 @@ const addToWishList = async (req, res) => {
         userId,
         products: [{ productId }],
       });
+      user.wishlist = wishList._id;
     } else {
       const existingProduct = wishList.products.find(
         (product) => product.productId.toString() === productId
@@ -39,7 +42,7 @@ const addToWishList = async (req, res) => {
 
       wishList.products.push({ productId });
     }
-
+    await user.save();
     await wishList.save();
 
     res.status(200).json({
@@ -96,27 +99,52 @@ const deleteWishList = async (req, res) => {
     if (!Mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ success: false, message: "No user found" });
     }
+    // console.log(productId)
     const productExists = await productSchema.findById(productId);
+    // console.log(productExists)
     if (!productExists) {
       return res
         .status(404)
         .json({ success: false, message: "Product not found" });
     }
-
-    const updatedWishList = await wishSchema.findOneAndUpdate(
-      { userId },
-      { $pull: { products: { productId } } },
-      { new: true }
-    );
-
-    if (!updatedWishList) {
+    const user = await userSchema.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    const wishlist = await wishSchema.findOne({ userId });
+    if (!wishlist) {
       return res
         .status(400)
-        .json({ success: false, message: "Product not found" });
+        .json({ success: false, message: "Wishlist not found" });
     }
+
+    const productIndex = wishlist.products.findIndex(
+      (product) => product.productId.toString() === productId
+    );
+
+    if (productIndex === -1) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found in wishlist" });
+    }
+
+    wishlist.products.splice(productIndex, 1);
+
+    if (wishlist.products.length > 0) {
+      await wishlist.save();
+      user.wishlist = wishlist._id;
+    } else {
+      await wishSchema.deleteOne({ _id: wishlist._id });
+      user.wishlist = undefined;
+    }
+
+    await user.save();
+
     res.status(200).json({
       success: true,
-      data: updatedWishList,
+      data: wishlist,
       message: "Product removed from wishlist successfully",
     });
   } catch (error) {

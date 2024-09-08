@@ -106,11 +106,11 @@ const deleteProduct = async (req, res) => {
   try {
     const productId = req.params.id;
 
-    if (!Mongoose.Types.ObjectId.isValid(productId)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "No product found" });
-    }
+      if (!Mongoose.Types.ObjectId.isValid(productId)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "No product found" });
+      }
 
     const deleteProduct = await productSchema.findByIdAndDelete(productId);
 
