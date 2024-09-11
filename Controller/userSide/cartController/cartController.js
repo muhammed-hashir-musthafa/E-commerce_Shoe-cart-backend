@@ -170,7 +170,7 @@ const quantityIncrement = async (req, res) => {
     );
 
     if (product >= 0) {
-      cart.products[product].quantity += quantity;
+      cart.products[product].quantity += 1;
     }
 
     await cart.save();
@@ -221,7 +221,7 @@ const quantityDecrement = async (req, res) => {
     );
 
     if (product >= 0) {
-      cart.products[product].quantity -= quantity;
+      cart.products[product].quantity -= 1;
     }
 
     if (cart.products[product].quantity < 1) {

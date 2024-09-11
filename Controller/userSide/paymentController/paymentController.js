@@ -10,7 +10,7 @@ const userSchema = require("../../../Model/userSchema/userSchema.js");
 const createPayment = async (req, res) => {
   try {
     const userId = req.params.id;
-    const { currency, receipt } = req.body;
+    const { currency } = req.body;
 
     if (!Mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ success: false, message: "No user found" });
@@ -29,12 +29,13 @@ const createPayment = async (req, res) => {
       .map((item) => item.productId.price)
       .reduce((a, b) => a + b, 0);
 
-    if (!currency || !receipt) {
+    if (!currency) {
       return res.status(400).json({
         success: false,
         message: "Please provide currency, and receipt details.",
       });
     }
+    const receipt = `receipt_${Date.now()}`;
 
     const options = {
       amount: amount * 100,
@@ -42,19 +43,28 @@ const createPayment = async (req, res) => {
       receipt,
     };
 
-    const order = await razorpay.orders.create(options);
+    try {
+      const order = await razorpay.orders.create(options);
 
-    if (!order) {
-      return res
-        .status(500)
-        .json({ success: false, message: "Order creation failed" });
+      if (!order) {
+        console.error("Order creation error:", order);
+        return res
+          .status(500)
+          .json({ success: false, message: "Order creation failed" });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: order,
+        message: "Payment order successfully created",
+      });
+    } catch (error) {
+      console.error("Razorpay Order Creation Error:", error);
+      res.status(500).json({
+        success: false,
+        message: `Razorpay Order Creation Failed: ${error.message}`,
+      });
     }
-
-    res.status(200).json({
-      success: true,
-      data: order,
-      message: "Payment order successfully created",
-    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -121,7 +131,7 @@ const paymentVerification = async (req, res) => {
 
       await order.save();
 
-      await cartSchema.deleteMany({ userId });
+      await cartSchema.deleteOne({ userId });
 
       const payment = new paymentSchema({
         razorpay_order_id,
@@ -131,8 +141,9 @@ const paymentVerification = async (req, res) => {
         currency: req.body.currency,
         status: "success",
       });
-      user.order.push(order._id)
-      await user.save()
+
+      user.order.push(order._id);
+      await user.save();
       await payment.save();
 
       res.status(200).json({
