@@ -89,7 +89,7 @@ const getOrders = async (req, res) => {
     }
 
     const orderList = await orderSchema
-      .findOne({ userId })
+      .find({ userId })
       .populate("products.productId");
 
     if (!orderList) {

@@ -17,7 +17,7 @@ const totalRevenue = async (req, res) => {
       .flat(Infinity)
       .reduce((a, b) => a + b, 0);
 
-    console.log(totalRevenue);
+    // console.log(totalRevenue);
      res.status(200).json({
       success: true,
       message: `Total revenue is ${totalRevenue}`,
