@@ -1,3 +1,4 @@
+const  mongoose  = require("mongoose");
 const signUpValidation = require("../../../middleware/joiValidation/signUpValidationSchema.js");
 const userSchema = require("../../../Model/userSchema/userSchema.js");
 const { hashedPassword, comparePassword } = require("../../../utils/bcrypt.js");
@@ -107,4 +108,54 @@ const logout = (req, res) => {
   }
 };
 
-module.exports = { signUp, login, logout };
+//update details
+const updateInfo = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { address, city, state, contact, pincode } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found" });
+    }
+
+    if (!address || !city || !state || !pincode || !contact) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
+    }
+
+    const updatedUser = await userSchema.findByIdAndUpdate(
+      userId,
+      {
+        address,
+        city,
+        state,
+        contact,
+        pincode,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!updatedUser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found " });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: `Bad request ${error.message} ` });
+  }
+};
+
+module.exports = { signUp, login, logout, updateInfo };

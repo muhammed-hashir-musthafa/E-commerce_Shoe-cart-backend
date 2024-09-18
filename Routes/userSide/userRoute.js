@@ -3,6 +3,7 @@ const {
   login,
   signUp,
   logout,
+  updateInfo,
 } = require("../../Controller/userSide/userController/userController.js");
 const {
   getProducts,
@@ -22,7 +23,7 @@ const {
   getOrders,
   orderItem,
 } = require("../../Controller/userSide/orderController/orderController.js");
-const {checkAuth} = require("../../middleware/auth.js");
+const { checkAuth } = require("../../middleware/auth.js");
 const {
   createPayment,
   paymentVerification,
@@ -37,6 +38,7 @@ const userRouter = express.Router();
 userRouter.post("/register", signUp);
 userRouter.post("/login", login);
 userRouter.post("/logout", logout);
+userRouter.patch("/:id/updateinfo", updateInfo);
 
 userRouter.get("/products", getProducts);
 userRouter.get("/products/:id", getProductWithId);

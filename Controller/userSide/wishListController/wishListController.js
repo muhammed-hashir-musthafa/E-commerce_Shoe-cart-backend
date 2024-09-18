@@ -118,7 +118,7 @@ const deleteWishList = async (req, res) => {
 
     wishlist.products.splice(productIndex, 1);
 
-    if (wishlist.products.length > 0) {
+    if (wishlist.products.length >= 0) {
       await wishlist.save();
     } else {
       await wishSchema.deleteOne({ _id: wishlist._id });
