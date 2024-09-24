@@ -8,7 +8,7 @@ const checkAuth = async (req, res, next) => {
     if (!token) {
       return res
         .status(400)
-        .json({ success: false, message: "Access denied " });
+        .json({ success: false, message: "Access denied" });
     }
 
     const tokenValidate = jwt.verify(token, process.env.TOKEN_SECRET);

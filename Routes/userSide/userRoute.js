@@ -22,6 +22,8 @@ const {
 const {
   getOrders,
   orderItem,
+  processRefund,
+  requestRefund,
 } = require("../../Controller/userSide/orderController/orderController.js");
 const { checkAuth } = require("../../middleware/auth.js");
 const {
@@ -53,6 +55,8 @@ userRouter.delete("/:id/wishlists", checkAuth, deleteWishList);
 
 // userRouter.post("/:id/orders", checkAuth, orderItem);
 userRouter.get("/:id/orders", checkAuth, getOrders);
+userRouter.post("/order/:orderId/refund", requestRefund);
+userRouter.post("/order/:orderId/process-refund", processRefund);
 userRouter.post("/:id/payment-gateway", checkAuth, createPayment);
 userRouter.post("/:id/payment-verification", checkAuth, paymentVerification);
 

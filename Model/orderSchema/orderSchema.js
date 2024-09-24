@@ -20,10 +20,22 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
+    isRefundRequested: { type: Boolean, default: false },
+    refundStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected", "completed"],
+      default: "pending",
+    },
+    refundAmount: { type: Number, default: 0 },
+    refundRequestedAt: { type: Date },
+    refundedAt: { type: Date },
     Total_Amount: {
       type: Number,
     },
     Payment_Id: {
+      type: String,
+    },
+    order_Id: {
       type: String,
     },
     Total_Items: { type: Number },

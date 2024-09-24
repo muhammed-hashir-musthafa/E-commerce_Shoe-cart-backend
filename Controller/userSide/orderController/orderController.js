@@ -111,4 +111,73 @@ const getOrders = async (req, res) => {
   }
 };
 
-module.exports = { /*orderItem,*/ getOrders };
+// User requests a refund
+const requestRefund = async (req, res) => {
+  const { orderId } = req.params;
+
+  try {
+    const order = await Order.findById(orderId);
+    if (!order)
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+
+    if (order.isRefundRequested) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Refund already requested" });
+    }
+
+    // Update order to reflect refund request
+    order.isRefundRequested = true;
+    order.refundRequestedAt = new Date();
+    await order.save();
+
+    res.json({ success: true, message: "Refund request submitted", order });
+  } catch (err) {
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error submitting refund request",
+        err,
+      });
+  }
+};
+
+// Admin processes a refund (or automatically after verification)
+const processRefund = async (req, res) => {
+  const { orderId } = req.params;
+  try {
+    const order = await Order.findById(orderId);
+    if (!order)
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+
+    // Use Razorpay to process the refund
+    const paymentId = order.paymentInfo.paymentId;
+
+    const refund = await razorpay.payments.refund(paymentId, {
+      amount: order.totalAmount * 100, // amount in paise
+    });
+
+    // Update order details
+    order.refundStatus = "completed";
+    order.refundedAt = new Date();
+    order.refundAmount = refund.amount / 100; // convert from paise to rupees
+    await order.save();
+
+    res.json({
+      success: true,
+      message: "Refund processed successfully",
+      refund,
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, message: "Error processing refund", err });
+  }
+};
+
+module.exports = { /*orderItem,*/ getOrders, requestRefund, processRefund };
