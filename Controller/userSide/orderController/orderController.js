@@ -116,7 +116,7 @@ const requestRefund = async (req, res) => {
   const { orderId } = req.params;
 
   try {
-    const order = await Order.findById(orderId);
+    const order = await orderSchema.findById(orderId);
     if (!order)
       return res
         .status(404)
@@ -149,7 +149,7 @@ const requestRefund = async (req, res) => {
 const processRefund = async (req, res) => {
   const { orderId } = req.params;
   try {
-    const order = await Order.findById(orderId);
+    const order = await orderSchema.findById(orderId);
     if (!order)
       return res
         .status(404)
@@ -159,7 +159,7 @@ const processRefund = async (req, res) => {
     const paymentId = order.paymentInfo.paymentId;
 
     const refund = await razorpay.payments.refund(paymentId, {
-      amount: order.totalAmount * 100, // amount in paise
+      amount: order.Total_Amount * 100, // amount in paise
     });
 
     // Update order details
