@@ -112,73 +112,79 @@ const getOrders = async (req, res) => {
   }
 };
 
-// User requests a refund
+// Request a refund
 const requestRefund = async (req, res) => {
   const { orderId } = req.params;
 
   try {
     const order = await orderSchema.findById(orderId);
-    if (!order)
-      return res
-        .status(404)
-        .json({ success: false, message: "Order not found" });
-
-    if (order.isRefundRequested) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Refund already requested" });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
     }
 
-    // Update order to reflect refund request
-    order.isRefundRequested = true;
+    if (order.isRefundRequested) {
+      return res.status(400).json({ success: false, message: "Refund already requested" });
+    }
+
+     order.isRefundRequested = true;
     order.refundRequestedAt = new Date();
     await order.save();
 
-    res.json({ success: true, message: "Refund request submitted", order });
+    return res.status(200).json({
+      success: true,
+      message: "Refund request submitted",
+      order,
+    });
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error submitting refund request",
-        err,
-      });
+    console.error("Error in requestRefund:", err);  
+    return res.status(500).json({
+      success: false,
+      message: "Error submitting refund request",
+      error: err.message,
+    });
   }
 };
 
-// Admin processes a refund (or automatically after verification)
+// Process a refund
 const processRefund = async (req, res) => {
   const { orderId } = req.params;
+
   try {
     const order = await orderSchema.findById(orderId);
-    if (!order)
-      return res
-        .status(404)
-        .json({ success: false, message: "Order not found" });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
 
-    // Use Razorpay to process the refund
+     if (order.refundStatus === "completed") {
+      return res.status(400).json({ success: false, message: "Refund already processed" });
+    }
+
     const paymentId = order.paymentInfo.paymentId;
+    const amountInPaise = order.Total_Amount * 100;  
 
-    const refund = await razorpay.payments.refund(paymentId, {
-      amount: order.Total_Amount * 100, // amount in paise
+     const refund = await razorpay.payments.refund(paymentId, {
+      amount: amountInPaise,
     });
 
-    // Update order details
-    order.refundStatus = "completed";
+     order.refundStatus = "completed";
     order.refundedAt = new Date();
-    order.refundAmount = refund.amount / 100; // convert from paise to rupees
+    order.refundAmount = refund.amount / 100;   
     await order.save();
 
-    res.json({
+    return res.status(200).json({
       success: true,
       message: "Refund processed successfully",
       refund,
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "Error processing refund", err });
+    console.error("Error in processRefund:", err);   
+    return res.status(500).json({
+      success: false,
+      message: "Error processing refund",
+      error: err.message,
+    });
   }
 };
+
 
 module.exports = {/* orderItem*/ getOrders, requestRefund, processRefund };
